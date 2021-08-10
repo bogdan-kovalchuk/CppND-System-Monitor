@@ -85,7 +85,7 @@ float LinuxParser::MemoryUtilization() {
       }
     }
   }
-  if (total_memory != 0.0f) {
+  if (total_memory != 0.0) {
     used_memory = (total_memory - available_memory) / total_memory;
   }
   return used_memory;
