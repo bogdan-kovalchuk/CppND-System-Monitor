@@ -20,7 +20,7 @@ int NumberOfProcesses(string skey) {
   if (stream.is_open()) {
     while (std::getline(stream, line)) {
       std::istringstream linestream(line);
-      linestream >> key >> processes;
+      linestream >> key;
       if (key == skey) {
         linestream >> processes;
         break;
@@ -137,8 +137,25 @@ long LinuxParser::ActiveJiffies() { return 0; }
 // TODO: Read and return the number of idle jiffies for the system
 long LinuxParser::IdleJiffies() { return 0; }
 
-// TODO: Read and return CPU utilization
-vector<string> LinuxParser::CpuUtilization() { return {}; }
+vector<string> LinuxParser::CpuUtilization() {
+  vector<string> stat_cpu;
+  string key, value, line;
+  std::ifstream stream(LinuxParser::kProcDirectory +
+                       LinuxParser::kStatFilename);
+  if (stream.is_open()) {
+    while (std::getline(stream, line)) {
+      std::istringstream linestream(line);
+      linestream >> key;
+      if (key == "cpu") {
+        while (linestream >> value) {
+          stat_cpu.push_back(value);
+        }
+        break;
+      }
+    }
+  }
+  return stat_cpu;
+}
 
 int LinuxParser::TotalProcesses() { return NumberOfProcesses("processes"); }
 
