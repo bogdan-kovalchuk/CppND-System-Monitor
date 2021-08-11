@@ -18,7 +18,7 @@ using std::vector;
 
 // TODO: Return the system's CPU
 Processor& System::Cpu() {
-  auto cpu_utilization = LinuxParser::CpuUtilization();
+  cpu_.UpdateCpuUtilization(LinuxParser::CpuUtilization());
   return cpu_;
 }
 

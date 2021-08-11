@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 
+using std::stoi;
 using std::string;
 using std::vector;
 
