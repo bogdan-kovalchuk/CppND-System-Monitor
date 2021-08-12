@@ -14,18 +14,18 @@ float Processor::Utilization() {
   int guest = stoi(stat_cpu[8]);
   int guest_nice = stoi(stat_cpu[9]);
 
-  int PrevIdle = previdle_ + previowait_;
-  int Idle = idle + iowait;
+  int previdle = previdle_ + previowait_;
+  int idl = idle + iowait;
 
-  int PrevNonIdle = prevuser_ + prevnice_ + prevsystem_ + previrq_ +
+  int prevnonidle = prevuser_ + prevnice_ + prevsystem_ + previrq_ +
                     prevsoftirq_ + prevsteal_;
-  int NonIdle = user + nice + system + irq + softirq + steal;
+  int nonidle = user + nice + system + irq + softirq + steal;
 
-  int PrevTotal = PrevIdle + PrevNonIdle;
-  int Total = Idle + NonIdle;
+  int prevtotal = previdle + prevnonidle;
+  int total = idl + nonidle;
 
-  int totald = Total - PrevTotal;
-  int idled = Idle - PrevIdle;
+  int totald = total - prevtotal;
+  int idled = idl - previdle;
 
   prevuser_ = user;
   prevnice_ = nice;
