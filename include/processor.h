@@ -14,16 +14,16 @@ class Processor {
   float Utilization();
 
  private:
-  int prevuser_ = 0;
-  int prevnice_ = 0;
-  int prevsystem_ = 0;
-  int previdle_ = 0;
-  int previowait_ = 0;
-  int previrq_ = 0;
-  int prevsoftirq_ = 0;
-  int prevsteal_ = 0;
-  int prevguest_ = 0;
-  int prevguest_nice_ = 0;
+  int prev_user_ = 0;
+  int prev_nice_ = 0;
+  int prev_system_ = 0;
+  int prev_idle_ = 0;
+  int prev_iowait_ = 0;
+  int prev_irq_ = 0;
+  int prev_softirq_ = 0;
+  int prev_steal_ = 0;
+  int prev_guest_ = 0;
+  int prev_guest_nice_ = 0;
 };
 
 #endif
