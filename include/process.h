@@ -4,6 +4,7 @@
 #include <linux_parser.h>
 
 #include <string>
+#include <vector>
 
 class Process {
  public:
@@ -14,10 +15,11 @@ class Process {
   float CpuUtilization();
   std::string Ram();
   long int UpTime();
-  bool operator<(Process const& a) const;
+  bool operator>(Process const& a) const;
 
  private:
-  const int pid_;
+  void CalculateCpuUtilization(std::vector<std::string> cpu_utilization_data);
+  int pid_;
   std::string user_;
   std::string command_;
   float cpu_utilization_;

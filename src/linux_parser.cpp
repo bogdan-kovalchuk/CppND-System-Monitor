@@ -158,6 +158,33 @@ string LinuxParser::Command(int pid) {
   return command;
 }
 
+vector<string> LinuxParser::CpuUtilization(int pid) {
+  vector<string> output;
+  string value, seconds, line;
+  int i = 1;
+  // Extract uptime of the system in seconds
+  std::ifstream stream_uptime(kProcDirectory + kUptimeFilename);
+  if (stream_uptime.is_open()) {
+    std::getline(stream_uptime, line);
+    std::istringstream linestream(line);
+    linestream >> seconds;
+    output.push_back(seconds);
+  }
+  // Extract cpu utilization data from /proc/[PID]/stat
+  std::ifstream stream(kProcDirectory + to_string(pid) + kStatFilename);
+  if (stream.is_open()) {
+    std::getline(stream, line);
+    std::istringstream linestream(line);
+    while (linestream >> value) {
+      if (i == 14 || i == 15 || i == 16 || i == 17 || i == 22) {
+        output.push_back(value);
+      }
+      i++;
+    }
+  }
+  return output;
+}
+
 // TODO: Read and return the memory used by a process
 // REMOVE: [[maybe_unused]] once you define the function
 string LinuxParser::Ram(int pid [[maybe_unused]]) { return string(); }
