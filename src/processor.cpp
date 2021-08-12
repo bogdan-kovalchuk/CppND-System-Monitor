@@ -1,6 +1,8 @@
 #include "processor.h"
 
-void Processor::UpdateCpuUtilization(vector<string> stat_cpu) {
+float Processor::Utilization() {
+  vector<string> stat_cpu = LinuxParser::CpuUtilization();
+
   int user = stoi(stat_cpu[0]);
   int nice = stoi(stat_cpu[1]);
   int system = stoi(stat_cpu[2]);
@@ -25,8 +27,6 @@ void Processor::UpdateCpuUtilization(vector<string> stat_cpu) {
   int totald = Total - PrevTotal;
   int idled = Idle - PrevIdle;
 
-  cpu_utilization_ = (float)(totald - idled) / totald;
-
   prevuser_ = user;
   prevnice_ = nice;
   prevsystem_ = system;
@@ -37,6 +37,8 @@ void Processor::UpdateCpuUtilization(vector<string> stat_cpu) {
   prevsteal_ = steal;
   prevguest_ = guest;
   prevguest_nice_ = guest_nice;
-}
 
-float Processor::Utilization() { return cpu_utilization_; }
+  float cpu_utilization = (float)(totald - idled) / totald;
+
+  return cpu_utilization;
+}

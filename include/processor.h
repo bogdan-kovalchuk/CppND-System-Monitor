@@ -1,8 +1,9 @@
 #ifndef PROCESSOR_H
 #define PROCESSOR_H
-
 #include <string>
 #include <vector>
+
+#include "linux_parser.h"
 
 using std::stoi;
 using std::string;
@@ -10,11 +11,9 @@ using std::vector;
 
 class Processor {
  public:
-  void UpdateCpuUtilization(vector<string> stat_cpu);
   float Utilization();
 
  private:
-  float cpu_utilization_ = 0.0;
   int prevuser_ = 0;
   int prevnice_ = 0;
   int prevsystem_ = 0;
