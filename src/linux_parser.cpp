@@ -127,8 +127,7 @@ long LinuxParser::UpTime() {
 vector<string> LinuxParser::CpuUtilization() {
   vector<string> stat_cpu;
   string key, value, line;
-  std::ifstream stream(LinuxParser::kProcDirectory +
-                       LinuxParser::kStatFilename);
+  std::ifstream stream(kProcDirectory + kStatFilename);
   if (stream.is_open()) {
     while (std::getline(stream, line)) {
       std::istringstream linestream(line);
@@ -150,9 +149,14 @@ int LinuxParser::RunningProcesses() {
   return NumberOfProcesses("procs_running");
 }
 
-// TODO: Read and return the command associated with a process
-// REMOVE: [[maybe_unused]] once you define the function
-string LinuxParser::Command(int pid [[maybe_unused]]) { return string(); }
+string LinuxParser::Command(int pid) {
+  string command;
+  std::ifstream stream(kProcDirectory + std::to_string(pid) + kCmdlineFilename);
+  if (stream.is_open()) {
+    std::getline(stream, command);
+  }
+  return command;
+}
 
 // TODO: Read and return the memory used by a process
 // REMOVE: [[maybe_unused]] once you define the function
