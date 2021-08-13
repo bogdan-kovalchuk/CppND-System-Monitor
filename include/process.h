@@ -24,7 +24,7 @@ class Process {
   std::string command_;
   float cpu_utilization_;
   std::string ram_;
-  long int up_time_;
+  long up_time_;
 };
 
 #endif

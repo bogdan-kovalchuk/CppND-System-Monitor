@@ -14,7 +14,7 @@ void add_zero(string& s) {
 }  // namespace
 
 string Format::ElapsedTime(long seconds) {
-  string h = to_string(seconds / 3600);
+  string h = to_string((seconds / 3600) % 100);  // goes to 0 after 99
   string m = to_string((seconds / 60) % 60);
   string s = to_string(seconds % 60);
 

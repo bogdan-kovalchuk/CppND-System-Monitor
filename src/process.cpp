@@ -16,7 +16,7 @@ Process::Process(int pid) : pid_(pid) {
   // LinuxParser::Ram(pid);
   // LinuxParser::Uid(pid);
   // LinuxParser::User(pid);
-  // LinuxParser::UpTime(pid);
+  up_time_ = LinuxParser::UpTime(pid) / sysconf(_SC_CLK_TCK);
   CalculateCpuUtilization(LinuxParser::CpuUtilization(pid));
 }
 
@@ -37,6 +37,10 @@ bool Process::operator>(Process const& a) const {
 }
 
 void Process::CalculateCpuUtilization(vector<string> cpu_utilization_data) {
+  if (cpu_utilization_data.size() < 6) {
+    cpu_utilization_ = 0.0;
+    return;
+  }
   int uptime = std::stoi(cpu_utilization_data[0]);
   int utime = std::stoi(cpu_utilization_data[1]);
   int stime = std::stoi(cpu_utilization_data[2]);
