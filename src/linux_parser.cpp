@@ -185,17 +185,29 @@ vector<string> LinuxParser::CpuUtilization(int pid) {
   return output;
 }
 
-// TODO: Read and return the memory used by a process
-// REMOVE: [[maybe_unused]] once you define the function
-string LinuxParser::Ram(int pid [[maybe_unused]]) { return string(); }
+string LinuxParser::Ram(int pid) {
+  string line, key, ram = "0";
+  std::ifstream stream(kProcDirectory + std::to_string(pid) + kStatusFilename);
+  if (stream.is_open()) {
+    while (std::getline(stream, line)) {
+      std::istringstream linestream(line);
+      linestream >> key;
+      if (key == "VmSize:") {
+        linestream >> ram;
+        break;
+      }
+    }
+  }
+  return ram;
+}
 
 // TODO: Read and return the user ID associated with a process
 // REMOVE: [[maybe_unused]] once you define the function
-string LinuxParser::Uid(int pid [[maybe_unused]]) { return string(); }
+string LinuxParser::Uid(int pid[[maybe_unused]]) { return string(); }
 
 // TODO: Read and return the user associated with a process
 // REMOVE: [[maybe_unused]] once you define the function
-string LinuxParser::User(int pid [[maybe_unused]]) { return string(); }
+string LinuxParser::User(int pid[[maybe_unused]]) { return string(); }
 
 long LinuxParser::UpTime(int pid) {
   long up_time = 0;

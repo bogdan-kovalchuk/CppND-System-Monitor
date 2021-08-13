@@ -13,9 +13,9 @@
 
 using std::set;
 using std::size_t;
+using std::sort;
 using std::string;
 using std::vector;
-using std::sort;
 
 Processor& System::Cpu() { return cpu_; }
 

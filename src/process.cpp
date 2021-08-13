@@ -13,7 +13,7 @@ using std::vector;
 
 Process::Process(int pid) : pid_(pid) {
   command_ = LinuxParser::Command(pid);
-  // LinuxParser::Ram(pid);
+  ram_ = std::to_string((int)(std::stoi(LinuxParser::Ram(pid)) / 1024));
   // LinuxParser::Uid(pid);
   // LinuxParser::User(pid);
   up_time_ = LinuxParser::UpTime(pid) / sysconf(_SC_CLK_TCK);
