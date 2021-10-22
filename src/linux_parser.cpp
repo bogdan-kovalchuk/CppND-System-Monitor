@@ -251,3 +251,29 @@ long LinuxParser::UpTime(int pid) {
   }
   return up_time;
 }
+
+string LinuxParser::ParseStatField(const string& stat_line, int field_index) {
+  if (field_index < 1) return "";
+  if (field_index == 1) {
+    auto pos = stat_line.find('(');
+    return (pos != string::npos) ? stat_line.substr(0, pos) : "";
+  }
+  if (field_index == 2) {
+    auto open = stat_line.find('(');
+    auto close = stat_line.rfind(')');
+    if (open == string::npos || close == string::npos || close <= open)
+      return "";
+    return stat_line.substr(open + 1, close - open - 1);
+  }
+  auto close = stat_line.rfind(')');
+  if (close == string::npos || close + 2 >= stat_line.size()) return "";
+  string tail = stat_line.substr(close + 2);
+  std::istringstream iss(tail);
+  string token;
+  int current = 3;
+  while (iss >> token) {
+    if (current == field_index) return token;
+    ++current;
+  }
+  return "";
+}

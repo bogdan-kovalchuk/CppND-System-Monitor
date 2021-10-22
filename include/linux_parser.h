@@ -37,6 +37,8 @@ std::string Ram(int pid);
 std::string Uid(int pid);
 std::string User(int pid);
 long UpTime(int pid);
+
+std::string ParseStatField(const std::string& stat_line, int field_index);
 };  // namespace LinuxParser
 
 #endif
