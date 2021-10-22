@@ -39,6 +39,8 @@ std::string User(int pid);
 long UpTime(int pid);
 
 std::string ParseStatField(const std::string& stat_line, int field_index);
+std::string ParseStatusValue(const std::string& status_content,
+                             const std::string& key);
 };  // namespace LinuxParser
 
 #endif
