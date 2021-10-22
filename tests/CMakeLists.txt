@@ -12,3 +12,12 @@ target_compile_features(linux_parser_test PRIVATE cxx_std_17)
 target_compile_options(linux_parser_test PRIVATE -Wall -Wextra -Wpedantic)
 add_test(NAME linux_parser_test COMMAND linux_parser_test)
 
+add_executable(string_parser_test
+  string_parser_test.cpp
+  ../src/linux_parser.cpp
+)
+target_include_directories(string_parser_test PRIVATE ../include)
+target_compile_features(string_parser_test PRIVATE cxx_std_17)
+target_compile_options(string_parser_test PRIVATE -Wall -Wextra -Wpedantic)
+add_test(NAME string_parser_test COMMAND string_parser_test)
+
