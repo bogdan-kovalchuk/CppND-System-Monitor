@@ -244,7 +244,11 @@ long LinuxParser::UpTime(int pid) {
     std::istringstream linestream(line);
     while (linestream >> value) {
       if (i == 22) {
-        up_time = std::stol(value);
+        try {
+          up_time = std::stol(value);
+        } catch (const std::exception&) {
+          up_time = 0;
+        }
       }
       i++;
     }
@@ -256,7 +260,10 @@ string LinuxParser::ParseStatField(const string& stat_line, int field_index) {
   if (field_index < 1) return "";
   if (field_index == 1) {
     auto pos = stat_line.find('(');
-    return (pos != string::npos) ? stat_line.substr(0, pos) : "";
+    if (pos == string::npos) return "";
+    string pid_str = stat_line.substr(0, pos);
+    while (!pid_str.empty() && std::isspace(pid_str.back())) pid_str.pop_back();
+    return pid_str;
   }
   if (field_index == 2) {
     auto open = stat_line.find('(');
