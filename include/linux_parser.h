@@ -6,6 +6,16 @@
 #include <string>
 
 namespace LinuxParser {
+
+// Proc filesystem parser approach:
+// - Stream-based functions read /proc files line-by-line using istringstream.
+//   Time complexity: O(n) where n is file size. Space: O(1) per call.
+// - String-based helpers (ParseStatField, ParseStatusValue) operate on
+//   pre-loaded content, enabling unit testing with synthetic data.
+//   ParseStatField: O(f) where f is field index (scans tokens after comm).
+//   ParseStatusValue: O(k) where k is content size (linear search for key).
+// Both approaches handle malformed input gracefully with fallback values.
+
 // Paths
 const std::string kProcDirectory{"/proc/"};
 const std::string kCmdlineFilename{"/cmdline"};
