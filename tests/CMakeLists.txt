@@ -30,3 +30,12 @@ target_compile_features(boundary_test PRIVATE cxx_std_17)
 target_compile_options(boundary_test PRIVATE -Wall -Wextra -Wpedantic)
 add_test(NAME boundary_test COMMAND boundary_test)
 
+add_executable(format_test
+  format_test.cpp
+  ../src/format.cpp
+)
+target_include_directories(format_test PRIVATE ../include)
+target_compile_features(format_test PRIVATE cxx_std_17)
+target_compile_options(format_test PRIVATE -Wall -Wextra -Wpedantic)
+add_test(NAME format_test COMMAND format_test)
+
