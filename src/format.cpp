@@ -1,5 +1,7 @@
 #include "format.h"
 
+#include <cstdio>
+#include <cstdlib>
 #include <string>
 
 using std::string;
@@ -23,4 +25,12 @@ string Format::ElapsedTime(long seconds) {
   add_zero(s);
 
   return h + ":" + m + ":" + s;
+}
+
+string Format::ElapsedTimeDiv(long seconds) {
+  char buf[16];
+  long h = (seconds / 3600) % 100;
+  ldiv_t rm = ldiv(seconds % 3600, 60);
+  std::snprintf(buf, sizeof(buf), "%02ld:%02ld:%02ld", h, rm.quot, rm.rem);
+  return buf;
 }
