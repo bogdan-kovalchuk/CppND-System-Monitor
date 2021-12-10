@@ -16,6 +16,7 @@ void add_zero(string& s) {
 }  // namespace
 
 string Format::ElapsedTime(long seconds) {
+  if (seconds < 0) seconds = 0;
   string h = to_string((seconds / 3600) % 100);  // goes to 0 after 99
   string m = to_string((seconds / 60) % 60);
   string s = to_string(seconds % 60);
@@ -28,6 +29,7 @@ string Format::ElapsedTime(long seconds) {
 }
 
 string Format::ElapsedTimeDiv(long seconds) {
+  if (seconds < 0) seconds = 0;
   char buf[16];
   long h = (seconds / 3600) % 100;
   ldiv_t rm = ldiv(seconds % 3600, 60);
