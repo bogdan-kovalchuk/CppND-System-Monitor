@@ -299,3 +299,15 @@ string LinuxParser::ParseStatusValue(const string& status_content,
   iss >> val;
   return val;
 }
+
+long LinuxParser::ParseLong(const string& s, long fallback) {
+  if (s.empty()) return fallback;
+  try {
+    size_t pos = 0;
+    long val = std::stol(s, &pos);
+    if (pos == 0) return fallback;
+    return val;
+  } catch (const std::exception&) {
+    return fallback;
+  }
+}
