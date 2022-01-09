@@ -57,3 +57,12 @@ target_compile_features(format_edge_test PRIVATE cxx_std_17)
 target_compile_options(format_edge_test PRIVATE -Wall -Wextra -Wpedantic)
 add_test(NAME format_edge_test COMMAND format_edge_test)
 
+add_executable(parse_long_test
+  parse_long_test.cpp
+  ../src/linux_parser.cpp
+)
+target_include_directories(parse_long_test PRIVATE ../include)
+target_compile_features(parse_long_test PRIVATE cxx_std_17)
+target_compile_options(parse_long_test PRIVATE -Wall -Wextra -Wpedantic)
+add_test(NAME parse_long_test COMMAND parse_long_test)
+
