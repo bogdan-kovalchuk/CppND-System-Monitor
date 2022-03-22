@@ -66,3 +66,13 @@ target_compile_features(parse_long_test PRIVATE cxx_std_17)
 target_compile_options(parse_long_test PRIVATE -Wall -Wextra -Wpedantic)
 add_test(NAME parse_long_test COMMAND parse_long_test)
 
+add_executable(process_order_test
+  process_order_test.cpp
+  ../src/linux_parser.cpp
+  ../src/process.cpp
+)
+target_include_directories(process_order_test PRIVATE ../include)
+target_compile_features(process_order_test PRIVATE cxx_std_17)
+target_compile_options(process_order_test PRIVATE -Wall -Wextra -Wpedantic)
+add_test(NAME process_order_test COMMAND process_order_test)
+
