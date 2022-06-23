@@ -3,6 +3,8 @@
 #include <dirent.h>
 #include <unistd.h>
 
+#include <algorithm>
+#include <cctype>
 #include <string>
 #include <vector>
 
@@ -193,7 +195,11 @@ string LinuxParser::Ram(int pid) {
       std::istringstream linestream(line);
       linestream >> key;
       if (key == "VmSize:") {
-        linestream >> ram;
+        string raw;
+        linestream >> raw;
+        bool numeric = !raw.empty() &&
+                       std::all_of(raw.begin(), raw.end(), ::isdigit);
+        ram = numeric ? raw : "0";
         break;
       }
     }
