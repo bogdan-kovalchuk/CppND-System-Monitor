@@ -76,3 +76,12 @@ target_compile_features(process_order_test PRIVATE cxx_std_17)
 target_compile_options(process_order_test PRIVATE -Wall -Wextra -Wpedantic)
 add_test(NAME process_order_test COMMAND process_order_test)
 
+add_executable(user_lookup_test
+  user_lookup_test.cpp
+  ../src/linux_parser.cpp
+)
+target_include_directories(user_lookup_test PRIVATE ../include)
+target_compile_features(user_lookup_test PRIVATE cxx_std_17)
+target_compile_options(user_lookup_test PRIVATE -Wall -Wextra -Wpedantic)
+add_test(NAME user_lookup_test COMMAND user_lookup_test)
+
