@@ -85,3 +85,12 @@ target_compile_features(user_lookup_test PRIVATE cxx_std_17)
 target_compile_options(user_lookup_test PRIVATE -Wall -Wextra -Wpedantic)
 add_test(NAME user_lookup_test COMMAND user_lookup_test)
 
+add_executable(format_div_test
+  format_div_test.cpp
+  ../src/format.cpp
+)
+target_include_directories(format_div_test PRIVATE ../include)
+target_compile_features(format_div_test PRIVATE cxx_std_17)
+target_compile_options(format_div_test PRIVATE -Wall -Wextra -Wpedantic)
+add_test(NAME format_div_test COMMAND format_div_test)
+
