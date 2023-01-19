@@ -167,3 +167,12 @@ target_compile_features(parse_meminfo_prefix_test PRIVATE cxx_std_17)
 target_compile_options(parse_meminfo_prefix_test PRIVATE -Wall -Wextra -Wpedantic)
 add_test(NAME parse_meminfo_prefix_test COMMAND parse_meminfo_prefix_test)
 
+add_executable(parse_long_strict_test
+  parse_long_strict_test.cpp
+  ../src/linux_parser.cpp
+)
+target_include_directories(parse_long_strict_test PRIVATE ../include)
+target_compile_features(parse_long_strict_test PRIVATE cxx_std_17)
+target_compile_options(parse_long_strict_test PRIVATE -Wall -Wextra -Wpedantic)
+add_test(NAME parse_long_strict_test COMMAND parse_long_strict_test)
+

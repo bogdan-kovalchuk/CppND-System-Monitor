@@ -301,6 +301,9 @@ string LinuxParser::ParseStatusValue(const string& status_content,
 
 long LinuxParser::ParseLong(const string& s, long fallback) {
   if (s.empty()) return fallback;
+  char first = s.front();
+  if (!std::isdigit(static_cast<unsigned char>(first)) && first != '-' && first != '+')
+    return fallback;
   try {
     size_t pos = 0;
     long val = std::stol(s, &pos);
