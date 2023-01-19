@@ -355,6 +355,7 @@ int LinuxParser::ParsePid(const string& stat_line) {
 
 string LinuxParser::ParseRamMb(const string& ram_kb) {
   long val = ParseLong(ram_kb, 0);
+  if (val < 0) val = 0;
   long mb = (val + 512) / 1024;
   return to_string(mb);
 }
