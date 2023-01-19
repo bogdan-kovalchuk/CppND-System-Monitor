@@ -158,3 +158,12 @@ target_compile_features(compute_cpu_test PRIVATE cxx_std_17)
 target_compile_options(compute_cpu_test PRIVATE -Wall -Wextra -Wpedantic)
 add_test(NAME compute_cpu_test COMMAND compute_cpu_test)
 
+add_executable(parse_meminfo_prefix_test
+  parse_meminfo_prefix_test.cpp
+  ../src/linux_parser.cpp
+)
+target_include_directories(parse_meminfo_prefix_test PRIVATE ../include)
+target_compile_features(parse_meminfo_prefix_test PRIVATE cxx_std_17)
+target_compile_options(parse_meminfo_prefix_test PRIVATE -Wall -Wextra -Wpedantic)
+add_test(NAME parse_meminfo_prefix_test COMMAND parse_meminfo_prefix_test)
+

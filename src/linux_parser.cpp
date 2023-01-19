@@ -323,16 +323,18 @@ string LinuxParser::ParseCmdline(const string& raw_cmdline) {
 string LinuxParser::ParseMeminfoValue(const string& meminfo_content,
                                       const string& key) {
   string search_key = key + ":";
-  size_t pos = meminfo_content.find(search_key);
-  if (pos == string::npos) return "";
-  size_t line_end = meminfo_content.find('\n', pos);
-  if (line_end == string::npos) line_end = meminfo_content.size();
-  string line = meminfo_content.substr(pos, line_end - pos);
-  std::istringstream iss(line);
-  string k, val;
-  iss >> k;
-  iss >> val;
-  return val;
+  std::istringstream stream(meminfo_content);
+  string line;
+  while (std::getline(stream, line)) {
+    if (line.find(search_key) == 0) {
+      std::istringstream iss(line);
+      string k, val;
+      iss >> k;
+      iss >> val;
+      return val;
+    }
+  }
+  return "";
 }
 
 int LinuxParser::ParsePid(const string& stat_line) {
