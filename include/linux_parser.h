@@ -58,6 +58,12 @@ std::string ParseMeminfoValue(const std::string& meminfo_content,
 int ParsePid(const std::string& stat_line);
 std::string ParseRamMb(const std::string& ram_kb);
 float ComputeCpuUtilization(const std::vector<std::string>& cpu_data);
+float ComputeProcessorUtilization(int user, int nice, int system, int idle,
+                                  int iowait, int irq, int softirq, int steal,
+                                  int prev_user, int prev_nice, int prev_system,
+                                  int prev_idle, int prev_iowait, int prev_irq,
+                                  int prev_softirq, int prev_steal,
+                                  bool first_call);
 };  // namespace LinuxParser
 
 #endif

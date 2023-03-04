@@ -3,6 +3,8 @@
 float Processor::Utilization() {
   vector<string> stat_cpu = LinuxParser::CpuUtilization();
 
+  if (stat_cpu.size() < 10) return 0.0f;
+
   int user = stoi(stat_cpu[0]);
   int nice = stoi(stat_cpu[1]);
   int system = stoi(stat_cpu[2]);
@@ -14,18 +16,16 @@ float Processor::Utilization() {
   int guest = stoi(stat_cpu[8]);
   int guest_nice = stoi(stat_cpu[9]);
 
-  int prev_idle = prev_idle_ + prev_iowait_;
-  int idl = idle + iowait;
+  bool first_call = (prev_user_ == 0 && prev_nice_ == 0 &&
+                     prev_system_ == 0 && prev_idle_ == 0 &&
+                     prev_iowait_ == 0 && prev_irq_ == 0 &&
+                     prev_softirq_ == 0 && prev_steal_ == 0);
 
-  int prev_nonidle = prev_user_ + prev_nice_ + prev_system_ + prev_irq_ +
-                     prev_softirq_ + prev_steal_;
-  int nonidle = user + nice + system + irq + softirq + steal;
-
-  int prev_total = prev_idle + prev_nonidle;
-  int total = idl + nonidle;
-
-  int totald = total - prev_total;
-  int idled = idl - prev_idle;
+  float cpu_utilization = LinuxParser::ComputeProcessorUtilization(
+      user, nice, system, idle, iowait, irq, softirq, steal,
+      prev_user_, prev_nice_, prev_system_,
+      prev_idle_, prev_iowait_, prev_irq_,
+      prev_softirq_, prev_steal_, first_call);
 
   prev_user_ = user;
   prev_nice_ = nice;
@@ -37,8 +37,6 @@ float Processor::Utilization() {
   prev_steal_ = steal;
   prev_guest_ = guest;
   prev_guest_nice_ = guest_nice;
-
-  float cpu_utilization = (float)(totald - idled) / totald;
 
   return cpu_utilization;
 }

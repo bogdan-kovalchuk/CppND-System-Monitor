@@ -374,3 +374,24 @@ float LinuxParser::ComputeCpuUtilization(const vector<string>& data) {
   if (seconds <= 0) return 0.0f;
   return (float)(total_time / clk_tck) / (float)seconds;
 }
+
+float LinuxParser::ComputeProcessorUtilization(
+    int user, int nice, int system, int idle,
+    int iowait, int irq, int softirq, int steal,
+    int prev_user, int prev_nice, int prev_system,
+    int prev_idle, int prev_iowait, int prev_irq,
+    int prev_softirq, int prev_steal,
+    bool first_call) {
+  if (first_call) return 0.0f;
+  int prev_idle_total = prev_idle + prev_iowait;
+  int idle_total = idle + iowait;
+  int prev_nonidle = prev_user + prev_nice + prev_system +
+                     prev_irq + prev_softirq + prev_steal;
+  int nonidle = user + nice + system + irq + softirq + steal;
+  int prev_total = prev_idle_total + prev_nonidle;
+  int total = idle_total + nonidle;
+  int totald = total - prev_total;
+  int idled = idle_total - prev_idle_total;
+  if (totald == 0) return 0.0f;
+  return (float)(totald - idled) / totald;
+}

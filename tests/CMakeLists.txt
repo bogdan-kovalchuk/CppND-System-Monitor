@@ -185,3 +185,12 @@ target_compile_features(parse_ram_negative_test PRIVATE cxx_std_17)
 target_compile_options(parse_ram_negative_test PRIVATE -Wall -Wextra -Wpedantic)
 add_test(NAME parse_ram_negative_test COMMAND parse_ram_negative_test)
 
+add_executable(compute_processor_test
+  compute_processor_test.cpp
+  ../src/linux_parser.cpp
+)
+target_include_directories(compute_processor_test PRIVATE ../include)
+target_compile_features(compute_processor_test PRIVATE cxx_std_17)
+target_compile_options(compute_processor_test PRIVATE -Wall -Wextra -Wpedantic)
+add_test(NAME compute_processor_test COMMAND compute_processor_test)
+
