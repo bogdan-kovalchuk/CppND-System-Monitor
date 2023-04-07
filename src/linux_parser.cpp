@@ -317,3 +317,12 @@ long LinuxParser::ParseLong(const string& s, long fallback) {
     return fallback;
   }
 }
+
+string LinuxParser::ParseCmdline(const string& raw_cmdline) {
+  string result = raw_cmdline;
+  std::replace(result.begin(), result.end(), '\0', ' ');
+  while (!result.empty() && result.back() == ' ') {
+    result.pop_back();
+  }
+  return result;
+}
