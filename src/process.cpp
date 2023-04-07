@@ -32,7 +32,9 @@ string Process::User() { return user_; }
 long int Process::UpTime() { return up_time_; }
 
 bool Process::operator>(Process const& a) const {
-  return (cpu_utilization_ > a.cpu_utilization_);
+  if (cpu_utilization_ != a.cpu_utilization_)
+    return cpu_utilization_ > a.cpu_utilization_;
+  return pid_ > a.pid_;
 }
 
 void Process::CalculateCpuUtilization(vector<string> cpu_utilization_data) {
