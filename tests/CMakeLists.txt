@@ -194,3 +194,12 @@ target_compile_features(compute_processor_test PRIVATE cxx_std_17)
 target_compile_options(compute_processor_test PRIVATE -Wall -Wextra -Wpedantic)
 add_test(NAME compute_processor_test COMMAND compute_processor_test)
 
+add_executable(cpu_field_extract_test
+  cpu_field_extract_test.cpp
+  ../src/linux_parser.cpp
+)
+target_include_directories(cpu_field_extract_test PRIVATE ../include)
+target_compile_features(cpu_field_extract_test PRIVATE cxx_std_17)
+target_compile_options(cpu_field_extract_test PRIVATE -Wall -Wextra -Wpedantic)
+add_test(NAME cpu_field_extract_test COMMAND cpu_field_extract_test)
+
