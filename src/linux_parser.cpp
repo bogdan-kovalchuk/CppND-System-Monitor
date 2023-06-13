@@ -34,25 +34,13 @@ int NumberOfProcesses(string skey) {
 }  // namespace
 
 string LinuxParser::OperatingSystem() {
-  string line;
-  string key;
-  string value;
   std::ifstream filestream(kOSPath);
   if (filestream.is_open()) {
-    while (std::getline(filestream, line)) {
-      std::replace(line.begin(), line.end(), ' ', '_');
-      std::replace(line.begin(), line.end(), '=', ' ');
-      std::replace(line.begin(), line.end(), '"', ' ');
-      std::istringstream linestream(line);
-      while (linestream >> key >> value) {
-        if (key == "PRETTY_NAME") {
-          std::replace(value.begin(), value.end(), '_', ' ');
-          return value;
-        }
-      }
-    }
+    string content((std::istreambuf_iterator<char>(filestream)),
+                    std::istreambuf_iterator<char>());
+    return ParseOperatingSystem(content);
   }
-  return value;
+  return "";
 }
 
 string LinuxParser::Kernel() {
@@ -357,6 +345,26 @@ string LinuxParser::ParseKernel(const string& version_line) {
   if (!(iss >> os >> version)) return "";
   if (!(iss >> kernel)) return "";
   return kernel;
+}
+
+string LinuxParser::ParseOperatingSystem(const string& os_release_content) {
+  std::istringstream stream(os_release_content);
+  string line;
+  while (std::getline(stream, line)) {
+    std::string replaced = line;
+    std::replace(replaced.begin(), replaced.end(), ' ', '_');
+    std::replace(replaced.begin(), replaced.end(), '=', ' ');
+    std::replace(replaced.begin(), replaced.end(), '"', ' ');
+    std::istringstream linestream(replaced);
+    string key, value;
+    while (linestream >> key >> value) {
+      if (key == "PRETTY_NAME") {
+        std::replace(value.begin(), value.end(), '_', ' ');
+        return value;
+      }
+    }
+  }
+  return "";
 }
 
 float LinuxParser::ComputeCpuUtilization(const vector<string>& data) {

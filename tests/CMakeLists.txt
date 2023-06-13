@@ -221,3 +221,12 @@ target_compile_features(parse_kernel_test PRIVATE cxx_std_17)
 target_compile_options(parse_kernel_test PRIVATE -Wall -Wextra -Wpedantic)
 add_test(NAME parse_kernel_test COMMAND parse_kernel_test)
 
+add_executable(parse_os_test
+  parse_os_test.cpp
+  ../src/linux_parser.cpp
+)
+target_include_directories(parse_os_test PRIVATE ../include)
+target_compile_features(parse_os_test PRIVATE cxx_std_17)
+target_compile_options(parse_os_test PRIVATE -Wall -Wextra -Wpedantic)
+add_test(NAME parse_os_test COMMAND parse_os_test)
+
