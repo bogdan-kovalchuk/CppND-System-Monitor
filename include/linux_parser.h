@@ -57,6 +57,7 @@ std::string ParseMeminfoValue(const std::string& meminfo_content,
                               const std::string& key);
 int ParsePid(const std::string& stat_line);
 std::string ParseRamMb(const std::string& ram_kb);
+std::string ParseUid(const std::string& status_content);
 float ComputeCpuUtilization(const std::vector<std::string>& cpu_data);
 float ComputeProcessorUtilization(int user, int nice, int system, int idle,
                                   int iowait, int irq, int softirq, int steal,

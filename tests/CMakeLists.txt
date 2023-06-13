@@ -203,3 +203,12 @@ target_compile_features(cpu_field_extract_test PRIVATE cxx_std_17)
 target_compile_options(cpu_field_extract_test PRIVATE -Wall -Wextra -Wpedantic)
 add_test(NAME cpu_field_extract_test COMMAND cpu_field_extract_test)
 
+add_executable(parse_uid_test
+  parse_uid_test.cpp
+  ../src/linux_parser.cpp
+)
+target_include_directories(parse_uid_test PRIVATE ../include)
+target_compile_features(parse_uid_test PRIVATE cxx_std_17)
+target_compile_options(parse_uid_test PRIVATE -Wall -Wextra -Wpedantic)
+add_test(NAME parse_uid_test COMMAND parse_uid_test)
+

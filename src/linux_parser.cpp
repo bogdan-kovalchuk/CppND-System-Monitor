@@ -204,14 +204,10 @@ string LinuxParser::Uid(int pid) {
   string line, key, uid = "0";
   std::ifstream stream(kProcDirectory + std::to_string(pid) + kStatusFilename);
   if (stream.is_open()) {
-    while (std::getline(stream, line)) {
-      std::istringstream linestream(line);
-      linestream >> key;
-      if (key == "Uid:") {
-        linestream >> uid;
-        break;
-      }
-    }
+    string content((std::istreambuf_iterator<char>(stream)),
+                    std::istreambuf_iterator<char>());
+    string parsed = ParseUid(content);
+    if (!parsed.empty()) return parsed;
   }
   return uid;
 }
@@ -351,6 +347,10 @@ string LinuxParser::ParseRamMb(const string& ram_kb) {
   if (val < 0) val = 0;
   long mb = (val + 512) / 1024;
   return to_string(mb);
+}
+
+string LinuxParser::ParseUid(const string& status_content) {
+  return ParseStatusValue(status_content, "Uid");
 }
 
 float LinuxParser::ComputeCpuUtilization(const vector<string>& data) {
