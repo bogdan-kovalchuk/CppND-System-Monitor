@@ -212,3 +212,12 @@ target_compile_features(parse_uid_test PRIVATE cxx_std_17)
 target_compile_options(parse_uid_test PRIVATE -Wall -Wextra -Wpedantic)
 add_test(NAME parse_uid_test COMMAND parse_uid_test)
 
+add_executable(parse_kernel_test
+  parse_kernel_test.cpp
+  ../src/linux_parser.cpp
+)
+target_include_directories(parse_kernel_test PRIVATE ../include)
+target_compile_features(parse_kernel_test PRIVATE cxx_std_17)
+target_compile_options(parse_kernel_test PRIVATE -Wall -Wextra -Wpedantic)
+add_test(NAME parse_kernel_test COMMAND parse_kernel_test)
+

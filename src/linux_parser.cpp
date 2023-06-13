@@ -56,15 +56,13 @@ string LinuxParser::OperatingSystem() {
 }
 
 string LinuxParser::Kernel() {
-  string os, version, kernel;
   string line;
   std::ifstream stream(kProcDirectory + kVersionFilename);
   if (stream.is_open()) {
     std::getline(stream, line);
-    std::istringstream linestream(line);
-    linestream >> os >> version >> kernel;
+    return ParseKernel(line);
   }
-  return kernel;
+  return "";
 }
 
 // BONUS: Update this to use std::filesystem
@@ -351,6 +349,14 @@ string LinuxParser::ParseRamMb(const string& ram_kb) {
 
 string LinuxParser::ParseUid(const string& status_content) {
   return ParseStatusValue(status_content, "Uid");
+}
+
+string LinuxParser::ParseKernel(const string& version_line) {
+  std::istringstream iss(version_line);
+  string os, version, kernel;
+  if (!(iss >> os >> version)) return "";
+  if (!(iss >> kernel)) return "";
+  return kernel;
 }
 
 float LinuxParser::ComputeCpuUtilization(const vector<string>& data) {
