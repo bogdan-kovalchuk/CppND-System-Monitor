@@ -74,29 +74,13 @@ vector<int> LinuxParser::Pids() {
 }
 
 float LinuxParser::MemoryUtilization() {
-  float used_memory = 0.0;       // relative
-  float total_memory = 0.0;      // kB
-  float available_memory = 0.0;  // kB
-  float val;
-  string line, key;
-
   std::ifstream stream(kProcDirectory + kMeminfoFilename);
   if (stream.is_open()) {
-    while (std::getline(stream, line)) {
-      std::replace(line.begin(), line.end(), ':', ' ');
-      std::istringstream linestream(line);
-      linestream >> key >> val;
-      if (key == "MemTotal") {
-        total_memory = val;
-      } else if (key == "MemAvailable") {
-        available_memory = val;
-      }
-    }
+    string content((std::istreambuf_iterator<char>(stream)),
+                    std::istreambuf_iterator<char>());
+    return ParseMemoryUtilization(content);
   }
-  if (total_memory != 0.0) {
-    used_memory = (total_memory - available_memory) / total_memory;
-  }
-  return used_memory;
+  return 0.0f;
 }
 
 long LinuxParser::UpTime() {
@@ -365,6 +349,27 @@ string LinuxParser::ParseOperatingSystem(const string& os_release_content) {
     }
   }
   return "";
+}
+
+float LinuxParser::ParseMemoryUtilization(const string& meminfo_content) {
+  float total_memory = 0.0f;
+  float available_memory = 0.0f;
+  std::istringstream stream(meminfo_content);
+  string line;
+  while (std::getline(stream, line)) {
+    std::replace(line.begin(), line.end(), ':', ' ');
+    std::istringstream linestream(line);
+    string key;
+    float val;
+    linestream >> key >> val;
+    if (key == "MemTotal") {
+      total_memory = val;
+    } else if (key == "MemAvailable") {
+      available_memory = val;
+    }
+  }
+  if (total_memory <= 0.0f) return 0.0f;
+  return (total_memory - available_memory) / total_memory;
 }
 
 float LinuxParser::ComputeCpuUtilization(const vector<string>& data) {

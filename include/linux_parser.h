@@ -60,6 +60,7 @@ std::string ParseRamMb(const std::string& ram_kb);
 std::string ParseUid(const std::string& status_content);
 std::string ParseKernel(const std::string& version_line);
 std::string ParseOperatingSystem(const std::string& os_release_content);
+float ParseMemoryUtilization(const std::string& meminfo_content);
 float ComputeCpuUtilization(const std::vector<std::string>& cpu_data);
 float ComputeProcessorUtilization(int user, int nice, int system, int idle,
                                   int iowait, int irq, int softirq, int steal,
