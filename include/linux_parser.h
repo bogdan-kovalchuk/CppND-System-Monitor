@@ -53,6 +53,8 @@ std::string ParseStatusValue(const std::string& status_content,
                              const std::string& key);
 long ParseLong(const std::string& s, long fallback = 0);
 std::string ParseCmdline(const std::string& raw_cmdline);
+std::string ParseMeminfoValue(const std::string& meminfo_content,
+                              const std::string& key);
 };  // namespace LinuxParser
 
 #endif
