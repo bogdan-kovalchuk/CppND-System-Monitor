@@ -103,3 +103,12 @@ target_compile_features(parse_cmdline_test PRIVATE cxx_std_17)
 target_compile_options(parse_cmdline_test PRIVATE -Wall -Wextra -Wpedantic)
 add_test(NAME parse_cmdline_test COMMAND parse_cmdline_test)
 
+add_executable(parse_meminfo_test
+  parse_meminfo_test.cpp
+  ../src/linux_parser.cpp
+)
+target_include_directories(parse_meminfo_test PRIVATE ../include)
+target_compile_features(parse_meminfo_test PRIVATE cxx_std_17)
+target_compile_options(parse_meminfo_test PRIVATE -Wall -Wextra -Wpedantic)
+add_test(NAME parse_meminfo_test COMMAND parse_meminfo_test)
+
