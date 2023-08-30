@@ -112,3 +112,13 @@ target_compile_features(parse_meminfo_test PRIVATE cxx_std_17)
 target_compile_options(parse_meminfo_test PRIVATE -Wall -Wextra -Wpedantic)
 add_test(NAME parse_meminfo_test COMMAND parse_meminfo_test)
 
+add_executable(process_rank_test
+  process_rank_test.cpp
+  ../src/linux_parser.cpp
+  ../src/process.cpp
+)
+target_include_directories(process_rank_test PRIVATE ../include)
+target_compile_features(process_rank_test PRIVATE cxx_std_17)
+target_compile_options(process_rank_test PRIVATE -Wall -Wextra -Wpedantic)
+add_test(NAME process_rank_test COMMAND process_rank_test)
+
