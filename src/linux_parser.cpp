@@ -84,16 +84,13 @@ float LinuxParser::MemoryUtilization() {
 }
 
 long LinuxParser::UpTime() {
-  long uptime = 0;  // seconds
-  string line;
   std::ifstream stream(kProcDirectory + kUptimeFilename);
   if (stream.is_open()) {
-    while (std::getline(stream, line)) {
-      std::istringstream linestream(line);
-      linestream >> uptime;
-    }
+    string content((std::istreambuf_iterator<char>(stream)),
+                    std::istreambuf_iterator<char>());
+    return ParseSystemUpTime(content);
   }
-  return uptime;
+  return 0;
 }
 
 vector<string> LinuxParser::CpuUtilization() {
@@ -377,6 +374,14 @@ string LinuxParser::ParseUser(const string& passwd_content, const string& uid) {
     if (placeholder == uid) return user;
   }
   return "";
+}
+
+long LinuxParser::ParseSystemUpTime(const string& uptime_content) {
+  std::istringstream iss(uptime_content);
+  double uptime = 0.0;
+  iss >> uptime;
+  if (iss.fail()) return 0;
+  return static_cast<long>(uptime);
 }
 
 float LinuxParser::ComputeCpuUtilization(const vector<string>& data) {

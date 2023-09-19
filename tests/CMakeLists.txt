@@ -248,3 +248,12 @@ target_compile_features(parse_user_test PRIVATE cxx_std_17)
 target_compile_options(parse_user_test PRIVATE -Wall -Wextra -Wpedantic)
 add_test(NAME parse_user_test COMMAND parse_user_test)
 
+add_executable(parse_uptime_test
+  parse_uptime_test.cpp
+  ../src/linux_parser.cpp
+)
+target_include_directories(parse_uptime_test PRIVATE ../include)
+target_compile_features(parse_uptime_test PRIVATE cxx_std_17)
+target_compile_options(parse_uptime_test PRIVATE -Wall -Wextra -Wpedantic)
+add_test(NAME parse_uptime_test COMMAND parse_uptime_test)
+
