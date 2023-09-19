@@ -171,32 +171,25 @@ string LinuxParser::Ram(int pid) {
 }
 
 string LinuxParser::Uid(int pid) {
-  string line, key, uid = "0";
   std::ifstream stream(kProcDirectory + std::to_string(pid) + kStatusFilename);
   if (stream.is_open()) {
     string content((std::istreambuf_iterator<char>(stream)),
                     std::istreambuf_iterator<char>());
-    string parsed = ParseUid(content);
-    if (!parsed.empty()) return parsed;
+    return ParseUid(content);
   }
-  return uid;
+  return "";
 }
 
 string LinuxParser::User(int pid) {
-  string line, val, user;
   string uid = Uid(pid);
+  if (uid.empty()) return "";
   std::ifstream stream(kPasswordPath);
   if (stream.is_open()) {
-    while (std::getline(stream, line)) {
-      std::replace(line.begin(), line.end(), ':', ' ');
-      std::istringstream linestream(line);
-      linestream >> user >> val >> val;
-      if (val == uid) {
-        return user;
-      }
-    }
+    string content((std::istreambuf_iterator<char>(stream)),
+                    std::istreambuf_iterator<char>());
+    return ParseUser(content, uid);
   }
-  return user;
+  return "";
 }
 
 long LinuxParser::UpTime(int pid) {
@@ -370,6 +363,20 @@ float LinuxParser::ParseMemoryUtilization(const string& meminfo_content) {
   }
   if (total_memory <= 0.0f) return 0.0f;
   return (total_memory - available_memory) / total_memory;
+}
+
+string LinuxParser::ParseUser(const string& passwd_content, const string& uid) {
+  std::istringstream stream(passwd_content);
+  string line;
+  while (std::getline(stream, line)) {
+    std::string replaced = line;
+    std::replace(replaced.begin(), replaced.end(), ':', ' ');
+    std::istringstream linestream(replaced);
+    string user, placeholder;
+    linestream >> user >> placeholder >> placeholder;
+    if (placeholder == uid) return user;
+  }
+  return "";
 }
 
 float LinuxParser::ComputeCpuUtilization(const vector<string>& data) {

@@ -239,3 +239,12 @@ target_compile_features(parse_memutil_test PRIVATE cxx_std_17)
 target_compile_options(parse_memutil_test PRIVATE -Wall -Wextra -Wpedantic)
 add_test(NAME parse_memutil_test COMMAND parse_memutil_test)
 
+add_executable(parse_user_test
+  parse_user_test.cpp
+  ../src/linux_parser.cpp
+)
+target_include_directories(parse_user_test PRIVATE ../include)
+target_compile_features(parse_user_test PRIVATE cxx_std_17)
+target_compile_options(parse_user_test PRIVATE -Wall -Wextra -Wpedantic)
+add_test(NAME parse_user_test COMMAND parse_user_test)
+
