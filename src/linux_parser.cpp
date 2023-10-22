@@ -112,12 +112,13 @@ int LinuxParser::RunningProcesses() {
 }
 
 string LinuxParser::Command(int pid) {
-  string command;
   std::ifstream stream(kProcDirectory + std::to_string(pid) + kCmdlineFilename);
   if (stream.is_open()) {
-    std::getline(stream, command);
+    string raw((std::istreambuf_iterator<char>(stream)),
+                std::istreambuf_iterator<char>());
+    return ParseCmdline(raw);
   }
-  return command;
+  return "";
 }
 
 vector<string> LinuxParser::CpuUtilization(int pid) {
