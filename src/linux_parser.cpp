@@ -52,9 +52,7 @@ vector<int> LinuxParser::Pids() {
   DIR* directory = opendir(kProcDirectory.c_str());
   struct dirent* file;
   while ((file = readdir(directory)) != nullptr) {
-    // Is this a directory?
     if (file->d_type == DT_DIR) {
-      // Is every character of the name a digit?
       string filename(file->d_name);
       if (std::all_of(filename.begin(), filename.end(), isdigit)) {
         int pid = stoi(filename);
@@ -63,6 +61,7 @@ vector<int> LinuxParser::Pids() {
     }
   }
   closedir(directory);
+  std::sort(pids.begin(), pids.end());
   return pids;
 }
 

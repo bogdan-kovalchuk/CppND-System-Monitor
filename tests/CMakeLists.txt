@@ -275,3 +275,12 @@ target_compile_features(parse_cmdline_integration_test PRIVATE cxx_std_17)
 target_compile_options(parse_cmdline_integration_test PRIVATE -Wall -Wextra -Wpedantic)
 add_test(NAME parse_cmdline_integration_test COMMAND parse_cmdline_integration_test)
 
+add_executable(pids_sort_test
+  pids_sort_test.cpp
+  ../src/linux_parser.cpp
+)
+target_include_directories(pids_sort_test PRIVATE ../include)
+target_compile_features(pids_sort_test PRIVATE cxx_std_17)
+target_compile_options(pids_sort_test PRIVATE -Wall -Wextra -Wpedantic)
+add_test(NAME pids_sort_test COMMAND pids_sort_test)
+
