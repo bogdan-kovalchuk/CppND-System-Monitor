@@ -63,6 +63,7 @@ std::string ParseOperatingSystem(const std::string& os_release_content);
 float ParseMemoryUtilization(const std::string& meminfo_content);
 std::string ParseUser(const std::string& passwd_content, const std::string& uid);
 long ParseSystemUpTime(const std::string& uptime_content);
+int ParseStatProcesses(const std::string& stat_content, const std::string& key);
 float ComputeCpuUtilization(const std::vector<std::string>& cpu_data);
 float ComputeProcessorUtilization(int user, int nice, int system, int idle,
                                   int iowait, int irq, int softirq, int steal,

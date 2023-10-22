@@ -15,21 +15,14 @@ using std::vector;
 
 namespace {
 int NumberOfProcesses(string skey) {
-  int processes = 0;
-  string key, line;
   std::ifstream stream(LinuxParser::kProcDirectory +
                        LinuxParser::kStatFilename);
   if (stream.is_open()) {
-    while (std::getline(stream, line)) {
-      std::istringstream linestream(line);
-      linestream >> key;
-      if (key == skey) {
-        linestream >> processes;
-        break;
-      }
-    }
+    string content((std::istreambuf_iterator<char>(stream)),
+                    std::istreambuf_iterator<char>());
+    return ParseStatProcesses(content, skey);
   }
-  return processes;
+  return 0;
 }
 }  // namespace
 
@@ -382,6 +375,21 @@ long LinuxParser::ParseSystemUpTime(const string& uptime_content) {
   iss >> uptime;
   if (iss.fail()) return 0;
   return static_cast<long>(uptime);
+}
+
+int LinuxParser::ParseStatProcesses(const string& stat_content, const string& key) {
+  std::istringstream stream(stat_content);
+  string line;
+  while (std::getline(stream, line)) {
+    std::istringstream linestream(line);
+    string k, val;
+    linestream >> k >> val;
+    if (k == key) {
+      long parsed = ParseLong(val, -1);
+      return parsed >= 0 ? static_cast<int>(parsed) : 0;
+    }
+  }
+  return 0;
 }
 
 float LinuxParser::ComputeCpuUtilization(const vector<string>& data) {
