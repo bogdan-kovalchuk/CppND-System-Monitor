@@ -284,3 +284,13 @@ target_compile_features(pids_sort_test PRIVATE cxx_std_17)
 target_compile_options(pids_sort_test PRIVATE -Wall -Wextra -Wpedantic)
 add_test(NAME pids_sort_test COMMAND pids_sort_test)
 
+add_executable(process_compare_test
+  process_compare_test.cpp
+  ../src/linux_parser.cpp
+  ../src/process.cpp
+)
+target_include_directories(process_compare_test PRIVATE ../include)
+target_compile_features(process_compare_test PRIVATE cxx_std_17)
+target_compile_options(process_compare_test PRIVATE -Wall -Wextra -Wpedantic)
+add_test(NAME process_compare_test COMMAND process_compare_test)
+
