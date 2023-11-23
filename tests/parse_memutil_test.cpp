@@ -44,6 +44,22 @@ int main() {
   assert(ParseMemoryUtilization(zero_total) == 0.0f);
   std::printf("ParseMemoryUtilization zero MemTotal returns zero\n");
 
+  const std::string no_available =
+      "MemTotal: 16384000 kB\n"
+      "MemFree: 8192000 kB\n";
+  assert(ParseMemoryUtilization(no_available) == 0.0f);
+
+  const std::string malformed =
+      "MemTotal: unknown kB\n"
+      "MemAvailable: 1000 kB\n";
+  assert(ParseMemoryUtilization(malformed) == 0.0f);
+
+  const std::string impossible =
+      "MemTotal: 1000 kB\n"
+      "MemAvailable: 1001 kB\n";
+  assert(ParseMemoryUtilization(impossible) == 0.0f);
+  std::printf("ParseMemoryUtilization rejects incomplete or malformed data\n");
+
   std::printf("All ParseMemoryUtilization tests passed.\n");
   return 0;
 }

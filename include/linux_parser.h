@@ -1,6 +1,7 @@
 #ifndef SYSTEM_PARSER_H
 #define SYSTEM_PARSER_H
 
+#include <cstdint>
 #include <fstream>
 #include <regex>
 #include <string>
@@ -65,11 +66,18 @@ std::string ParseUser(const std::string& passwd_content, const std::string& uid)
 long ParseSystemUpTime(const std::string& uptime_content);
 int ParseStatProcesses(const std::string& stat_content, const std::string& key);
 float ComputeCpuUtilization(const std::vector<std::string>& cpu_data);
-float ComputeProcessorUtilization(int user, int nice, int system, int idle,
-                                  int iowait, int irq, int softirq, int steal,
-                                  int prev_user, int prev_nice, int prev_system,
-                                  int prev_idle, int prev_iowait, int prev_irq,
-                                  int prev_softirq, int prev_steal,
+float ComputeProcessorUtilization(std::uint64_t user, std::uint64_t nice,
+                                  std::uint64_t system, std::uint64_t idle,
+                                  std::uint64_t iowait, std::uint64_t irq,
+                                  std::uint64_t softirq, std::uint64_t steal,
+                                  std::uint64_t prev_user,
+                                  std::uint64_t prev_nice,
+                                  std::uint64_t prev_system,
+                                  std::uint64_t prev_idle,
+                                  std::uint64_t prev_iowait,
+                                  std::uint64_t prev_irq,
+                                  std::uint64_t prev_softirq,
+                                  std::uint64_t prev_steal,
                                   bool first_call);
 };  // namespace LinuxParser
 

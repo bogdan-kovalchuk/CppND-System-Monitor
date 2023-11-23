@@ -1,31 +1,37 @@
 #include "processor.h"
 
+#include <array>
+#include <charconv>
+#include <cstdint>
+
+namespace {
+bool ParseCounter(const std::string& value, std::uint64_t& result) {
+  if (value.empty()) return false;
+  const char* begin = value.data();
+  const char* end = begin + value.size();
+  const auto parsed = std::from_chars(begin, end, result);
+  return parsed.ec == std::errc{} && parsed.ptr == end;
+}
+}  // namespace
+
 float Processor::Utilization() {
   vector<string> stat_cpu = LinuxParser::CpuUtilization();
 
-  if (stat_cpu.size() < 10) return 0.0f;
+  if (stat_cpu.size() < 8) return 0.0f;
 
-  int user = stoi(stat_cpu[0]);
-  int nice = stoi(stat_cpu[1]);
-  int system = stoi(stat_cpu[2]);
-  int idle = stoi(stat_cpu[3]);
-  int iowait = stoi(stat_cpu[4]);
-  int irq = stoi(stat_cpu[5]);
-  int softirq = stoi(stat_cpu[6]);
-  int steal = stoi(stat_cpu[7]);
-  int guest = stoi(stat_cpu[8]);
-  int guest_nice = stoi(stat_cpu[9]);
+  std::array<std::uint64_t, 8> counters{};
+  for (std::size_t index = 0; index < counters.size(); ++index) {
+    if (!ParseCounter(stat_cpu[index], counters[index])) return 0.0f;
+  }
 
-  bool first_call = (prev_user_ == 0 && prev_nice_ == 0 &&
-                     prev_system_ == 0 && prev_idle_ == 0 &&
-                     prev_iowait_ == 0 && prev_irq_ == 0 &&
-                     prev_softirq_ == 0 && prev_steal_ == 0);
+  const auto [user, nice, system, idle, iowait, irq, softirq, steal] =
+      counters;
 
   float cpu_utilization = LinuxParser::ComputeProcessorUtilization(
       user, nice, system, idle, iowait, irq, softirq, steal,
       prev_user_, prev_nice_, prev_system_,
       prev_idle_, prev_iowait_, prev_irq_,
-      prev_softirq_, prev_steal_, first_call);
+      prev_softirq_, prev_steal_, !initialized_);
 
   prev_user_ = user;
   prev_nice_ = nice;
@@ -35,8 +41,7 @@ float Processor::Utilization() {
   prev_irq_ = irq;
   prev_softirq_ = softirq;
   prev_steal_ = steal;
-  prev_guest_ = guest;
-  prev_guest_nice_ = guest_nice;
+  initialized_ = true;
 
   return cpu_utilization;
 }

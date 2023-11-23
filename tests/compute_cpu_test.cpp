@@ -12,7 +12,6 @@ int main() {
 
   const long clk_tck = sysconf(_SC_CLK_TCK);
 
-  assert(ComputeCpuUtilization({}).size() || true);
   assert(ComputeCpuUtilization({}) == 0.0f);
   assert(ComputeCpuUtilization({"100", "10"}) == 0.0f);
   assert(ComputeCpuUtilization({"100", "10", "5", "2", "1"}) == 0.0f);
@@ -61,10 +60,6 @@ int main() {
   }
 
   {
-    long uptime = 5000;
-    long starttime = 0;
-    long seconds = uptime;
-    float total_s = 0.0f;
     float expected = 0.0f;
     std::vector<std::string> data = {"5000", "0", "0", "0", "0", "0"};
     float result = ComputeCpuUtilization(data);

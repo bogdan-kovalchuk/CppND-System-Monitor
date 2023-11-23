@@ -294,3 +294,12 @@ target_compile_features(process_compare_test PRIVATE cxx_std_17)
 target_compile_options(process_compare_test PRIVATE -Wall -Wextra -Wpedantic)
 add_test(NAME process_compare_test COMMAND process_compare_test)
 
+add_executable(ram_integration_test
+  ram_integration_test.cpp
+  ../src/linux_parser.cpp
+)
+target_include_directories(ram_integration_test PRIVATE ../include)
+target_compile_features(ram_integration_test PRIVATE cxx_std_17)
+target_compile_options(ram_integration_test PRIVATE -Wall -Wextra -Wpedantic)
+add_test(NAME ram_integration_test COMMAND ram_integration_test)
+

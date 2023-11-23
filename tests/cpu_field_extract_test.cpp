@@ -29,7 +29,7 @@ int main() {
   std::printf("ParseStatField comm-with-spaces fields correct\n");
 
   const std::string multi_paren =
-      "9999 (a (b) c) R 1 9999 9999 0 -1 0 0 0 0 0 0 "
+      "9999 (a (b) c) R 1 9999 9999 0 -1 0 0 0 0 0 "
       "300 150 20 10 40 0 1 0 75000 6666666 9999";
   assert(ParseStatField(multi_paren, 14) == "300");
   assert(ParseStatField(multi_paren, 15) == "150");

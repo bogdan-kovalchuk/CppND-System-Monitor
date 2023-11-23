@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <cstdio>
+#include <limits>
 #include <string>
 
 int main() {
@@ -46,6 +47,20 @@ int main() {
       "processes\n";
   assert(ParseStatProcesses(no_value, "processes") == 0);
   std::printf("ParseStatProcesses key without value returns zero\n");
+
+  assert(ParseStatProcesses("processes 42junk\n", "processes") == 0);
+  assert(ParseStatProcesses("processes 42 43\n", "processes") == 42);
+  const std::string max_value =
+      "processes " + std::to_string(std::numeric_limits<int>::max()) + "\n";
+  assert(ParseStatProcesses(max_value, "processes") ==
+         std::numeric_limits<int>::max());
+  const std::string too_large =
+      "processes " +
+      std::to_string(static_cast<unsigned long long>(
+          std::numeric_limits<int>::max()) + 1ULL) +
+      "\n";
+  assert(ParseStatProcesses(too_large, "processes") == 0);
+  std::printf("ParseStatProcesses validates complete values and int range\n");
 
   std::printf("All ParseStatProcesses tests passed.\n");
   return 0;

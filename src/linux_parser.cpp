@@ -4,8 +4,13 @@
 #include <unistd.h>
 
 #include <algorithm>
+#include <array>
 #include <cctype>
+#include <charconv>
+#include <cstdint>
+#include <limits>
 #include <string>
+#include <system_error>
 #include <vector>
 
 using std::stof;
@@ -14,13 +19,27 @@ using std::to_string;
 using std::vector;
 
 namespace {
+bool ParseUnsignedStrict(const string& value, std::uint64_t& result) {
+  if (value.empty()) return false;
+  const char* begin = value.data();
+  const char* end = begin + value.size();
+  const auto parsed = std::from_chars(begin, end, result);
+  return parsed.ec == std::errc{} && parsed.ptr == end;
+}
+
+bool AddWithoutOverflow(std::uint64_t value, std::uint64_t& total) {
+  if (value > std::numeric_limits<std::uint64_t>::max() - total) return false;
+  total += value;
+  return true;
+}
+
 int NumberOfProcesses(string skey) {
   std::ifstream stream(LinuxParser::kProcDirectory +
                        LinuxParser::kStatFilename);
   if (stream.is_open()) {
     string content((std::istreambuf_iterator<char>(stream)),
                     std::istreambuf_iterator<char>());
-    return ParseStatProcesses(content, skey);
+    return LinuxParser::ParseStatProcesses(content, skey);
   }
   return 0;
 }
@@ -50,6 +69,7 @@ string LinuxParser::Kernel() {
 vector<int> LinuxParser::Pids() {
   vector<int> pids;
   DIR* directory = opendir(kProcDirectory.c_str());
+  if (directory == nullptr) return pids;
   struct dirent* file;
   while ((file = readdir(directory)) != nullptr) {
     if (file->d_type == DT_DIR) {
@@ -141,23 +161,17 @@ vector<string> LinuxParser::CpuUtilization(int pid) {
 }
 
 string LinuxParser::Ram(int pid) {
-  string line, key, ram = "0";
   std::ifstream stream(kProcDirectory + std::to_string(pid) + kStatusFilename);
   if (stream.is_open()) {
-    while (std::getline(stream, line)) {
-      std::istringstream linestream(line);
-      linestream >> key;
-      if (key == "VmSize:") {
-        string raw;
-        linestream >> raw;
-        bool numeric = !raw.empty() &&
-                       std::all_of(raw.begin(), raw.end(), ::isdigit);
-        ram = numeric ? raw : "0";
-        break;
-      }
+    string content((std::istreambuf_iterator<char>(stream)),
+                    std::istreambuf_iterator<char>());
+    string val = ParseStatusValue(content, "VmSize");
+    if (!val.empty()) {
+      bool numeric = std::all_of(val.begin(), val.end(), ::isdigit);
+      return numeric ? val : "0";
     }
   }
-  return ram;
+  return "0";
 }
 
 string LinuxParser::Uid(int pid) {
@@ -267,17 +281,23 @@ string LinuxParser::ParseCmdline(const string& raw_cmdline) {
 
 string LinuxParser::ParseMeminfoValue(const string& meminfo_content,
                                       const string& key) {
-  string search_key = key + ":";
   std::istringstream stream(meminfo_content);
   string line;
   while (std::getline(stream, line)) {
-    if (line.find(search_key) == 0) {
-      std::istringstream iss(line);
-      string k, val;
-      iss >> k;
-      iss >> val;
-      return val;
-    }
+    const auto separator = line.find(':');
+    if (separator == string::npos) continue;
+
+    string parsed_key = line.substr(0, separator);
+    const auto key_begin = parsed_key.find_first_not_of(" \t");
+    const auto key_end = parsed_key.find_last_not_of(" \t");
+    if (key_begin == string::npos) continue;
+    parsed_key = parsed_key.substr(key_begin, key_end - key_begin + 1);
+    if (parsed_key != key) continue;
+
+    std::istringstream value_stream(line.substr(separator + 1));
+    string value;
+    value_stream >> value;
+    return value;
   }
   return "";
 }
@@ -335,24 +355,18 @@ string LinuxParser::ParseOperatingSystem(const string& os_release_content) {
 }
 
 float LinuxParser::ParseMemoryUtilization(const string& meminfo_content) {
-  float total_memory = 0.0f;
-  float available_memory = 0.0f;
-  std::istringstream stream(meminfo_content);
-  string line;
-  while (std::getline(stream, line)) {
-    std::replace(line.begin(), line.end(), ':', ' ');
-    std::istringstream linestream(line);
-    string key;
-    float val;
-    linestream >> key >> val;
-    if (key == "MemTotal") {
-      total_memory = val;
-    } else if (key == "MemAvailable") {
-      available_memory = val;
-    }
+  std::uint64_t total_memory = 0;
+  std::uint64_t available_memory = 0;
+  if (!ParseUnsignedStrict(ParseMeminfoValue(meminfo_content, "MemTotal"),
+                           total_memory) ||
+      !ParseUnsignedStrict(ParseMeminfoValue(meminfo_content, "MemAvailable"),
+                           available_memory) ||
+      total_memory == 0 || available_memory > total_memory) {
+    return 0.0f;
   }
-  if (total_memory <= 0.0f) return 0.0f;
-  return (total_memory - available_memory) / total_memory;
+  return static_cast<float>(
+      static_cast<long double>(total_memory - available_memory) /
+      static_cast<long double>(total_memory));
 }
 
 string LinuxParser::ParseUser(const string& passwd_content, const string& uid) {
@@ -385,8 +399,12 @@ int LinuxParser::ParseStatProcesses(const string& stat_content, const string& ke
     string k, val;
     linestream >> k >> val;
     if (k == key) {
-      long parsed = ParseLong(val, -1);
-      return parsed >= 0 ? static_cast<int>(parsed) : 0;
+      std::uint64_t parsed = 0;
+      if (!ParseUnsignedStrict(val, parsed) ||
+          parsed > static_cast<std::uint64_t>(std::numeric_limits<int>::max())) {
+        return 0;
+      }
+      return static_cast<int>(parsed);
     }
   }
   return 0;
@@ -408,22 +426,32 @@ float LinuxParser::ComputeCpuUtilization(const vector<string>& data) {
 }
 
 float LinuxParser::ComputeProcessorUtilization(
-    int user, int nice, int system, int idle,
-    int iowait, int irq, int softirq, int steal,
-    int prev_user, int prev_nice, int prev_system,
-    int prev_idle, int prev_iowait, int prev_irq,
-    int prev_softirq, int prev_steal,
-    bool first_call) {
+    std::uint64_t user, std::uint64_t nice, std::uint64_t system,
+    std::uint64_t idle, std::uint64_t iowait, std::uint64_t irq,
+    std::uint64_t softirq, std::uint64_t steal, std::uint64_t prev_user,
+    std::uint64_t prev_nice, std::uint64_t prev_system,
+    std::uint64_t prev_idle, std::uint64_t prev_iowait,
+    std::uint64_t prev_irq, std::uint64_t prev_softirq,
+    std::uint64_t prev_steal, bool first_call) {
   if (first_call) return 0.0f;
-  int prev_idle_total = prev_idle + prev_iowait;
-  int idle_total = idle + iowait;
-  int prev_nonidle = prev_user + prev_nice + prev_system +
-                     prev_irq + prev_softirq + prev_steal;
-  int nonidle = user + nice + system + irq + softirq + steal;
-  int prev_total = prev_idle_total + prev_nonidle;
-  int total = idle_total + nonidle;
-  int totald = total - prev_total;
-  int idled = idle_total - prev_idle_total;
-  if (totald == 0) return 0.0f;
-  return (float)(totald - idled) / totald;
+
+  const std::array<std::uint64_t, 8> current{
+      user, nice, system, idle, iowait, irq, softirq, steal};
+  const std::array<std::uint64_t, 8> previous{
+      prev_user, prev_nice, prev_system, prev_idle,
+      prev_iowait, prev_irq, prev_softirq, prev_steal};
+  std::uint64_t busy_delta = 0;
+  std::uint64_t idle_delta = 0;
+  for (std::size_t index = 0; index < current.size(); ++index) {
+    if (current[index] < previous[index]) return 0.0f;
+    const std::uint64_t delta = current[index] - previous[index];
+    std::uint64_t& bucket = (index == 3 || index == 4) ? idle_delta : busy_delta;
+    if (!AddWithoutOverflow(delta, bucket)) return 0.0f;
+  }
+  std::uint64_t total_delta = busy_delta;
+  if (!AddWithoutOverflow(idle_delta, total_delta) || total_delta == 0) {
+    return 0.0f;
+  }
+  return static_cast<float>(static_cast<long double>(busy_delta) /
+                            static_cast<long double>(total_delta));
 }

@@ -22,11 +22,11 @@ int main() {
   std::printf("All Pids are positive\n");
 
   const auto pids2 = LinuxParser::Pids();
-  assert(pids.size() == pids2.size());
-  for (size_t i = 0; i < pids.size(); ++i) {
-    assert(pids[i] == pids2[i]);
+  assert(std::is_sorted(pids2.begin(), pids2.end()));
+  for (size_t i = 1; i < pids2.size(); ++i) {
+    assert(pids2[i] > pids2[i - 1]);
   }
-  std::printf("Pids order is deterministic across calls\n");
+  std::printf("Each Pids snapshot is deterministically ordered\n");
 
   std::printf("All Pids sorting tests passed.\n");
   return 0;

@@ -22,10 +22,12 @@ int main() {
 
   assert(ParseMeminfoValue(meminfo, "Total").empty());
   assert(ParseMeminfoValue(meminfo, "Free").empty());
-  assert(ParseMeminfoValue(meminfo, "Cached").empty());
+  assert(ParseMeminfoValue(meminfo, "Cache").empty());
+  assert(ParseMeminfoValue(meminfo, "Cached") == "4096000");
   std::printf("ParseMeminfoValue suffix-only keys do not match\n");
 
   const std::string tricky =
+      "VmSizeExtra:\t  999 kB\n"
       "VmPeak:\t  100 kB\n"
       "VmSize:\t  200 kB\n";
   assert(ParseMeminfoValue(tricky, "VmSize") == "200");

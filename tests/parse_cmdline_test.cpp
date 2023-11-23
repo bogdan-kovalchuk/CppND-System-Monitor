@@ -14,12 +14,14 @@ int main() {
   assert(ParseCmdline(single) == "ls");
   std::printf("ParseCmdline single arg passed\n");
 
-  std::string with_nulls = std::string("ls\0-la\0/tmp", 10);
+  const char with_nulls_raw[] = "ls\0-la\0/tmp";
+  std::string with_nulls(with_nulls_raw, sizeof(with_nulls_raw) - 1);
   std::string expected = "ls -la /tmp";
   assert(ParseCmdline(with_nulls) == expected);
   std::printf("ParseCmdline null-byte replacement passed\n");
 
-  std::string trailing = std::string("echo\0hello\0", 11);
+  const char trailing_raw[] = "echo\0hello\0";
+  std::string trailing(trailing_raw, sizeof(trailing_raw) - 1);
   assert(ParseCmdline(trailing) == "echo hello");
   std::printf("ParseCmdline trailing nulls trimmed\n");
 
