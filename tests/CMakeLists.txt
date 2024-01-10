@@ -122,3 +122,12 @@ target_compile_features(process_rank_test PRIVATE cxx_std_17)
 target_compile_options(process_rank_test PRIVATE -Wall -Wextra -Wpedantic)
 add_test(NAME process_rank_test COMMAND process_rank_test)
 
+add_executable(parse_pid_test
+  parse_pid_test.cpp
+  ../src/linux_parser.cpp
+)
+target_include_directories(parse_pid_test PRIVATE ../include)
+target_compile_features(parse_pid_test PRIVATE cxx_std_17)
+target_compile_options(parse_pid_test PRIVATE -Wall -Wextra -Wpedantic)
+add_test(NAME parse_pid_test COMMAND parse_pid_test)
+
