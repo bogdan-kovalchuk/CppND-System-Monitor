@@ -241,25 +241,16 @@ string LinuxParser::User(int pid) {
 }
 
 long LinuxParser::UpTime(int pid) {
-  long up_time = 0;
-  string value, line;
-  int i = 1;
+  string line;
   std::ifstream stream(kProcDirectory + to_string(pid) + kStatFilename);
   if (stream.is_open()) {
     std::getline(stream, line);
-    std::istringstream linestream(line);
-    while (linestream >> value) {
-      if (i == 22) {
-        try {
-          up_time = std::stol(value);
-        } catch (const std::exception&) {
-          up_time = 0;
-        }
-      }
-      i++;
+    string field22 = ParseStatField(line, 22);
+    if (!field22.empty()) {
+      return ParseLong(field22, 0);
     }
   }
-  return up_time;
+  return 0;
 }
 
 string LinuxParser::ParseStatField(const string& stat_line, int field_index) {
