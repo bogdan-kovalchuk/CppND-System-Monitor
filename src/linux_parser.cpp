@@ -341,3 +341,16 @@ string LinuxParser::ParseMeminfoValue(const string& meminfo_content,
   iss >> val;
   return val;
 }
+
+int LinuxParser::ParsePid(const string& stat_line) {
+  auto pos = stat_line.find('(');
+  if (pos == string::npos || pos == 0) return -1;
+  string pid_str = stat_line.substr(0, pos);
+  while (!pid_str.empty() && std::isspace(pid_str.back())) pid_str.pop_back();
+  if (pid_str.empty()) return -1;
+  try {
+    return std::stoi(pid_str);
+  } catch (const std::exception&) {
+    return -1;
+  }
+}
