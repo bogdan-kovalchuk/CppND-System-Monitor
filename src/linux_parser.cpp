@@ -353,3 +353,18 @@ string LinuxParser::ParseRamMb(const string& ram_kb) {
   long mb = (val + 512) / 1024;
   return to_string(mb);
 }
+
+float LinuxParser::ComputeCpuUtilization(const vector<string>& data) {
+  if (data.size() < 6) return 0.0f;
+  long uptime = ParseLong(data[0], 0);
+  long utime = ParseLong(data[1], 0);
+  long stime = ParseLong(data[2], 0);
+  long cutime = ParseLong(data[3], 0);
+  long cstime = ParseLong(data[4], 0);
+  long starttime = ParseLong(data[5], 0);
+  long total_time = utime + stime + cutime + cstime;
+  long clk_tck = sysconf(_SC_CLK_TCK);
+  long seconds = uptime - (starttime / clk_tck);
+  if (seconds <= 0) return 0.0f;
+  return (float)(total_time / clk_tck) / (float)seconds;
+}

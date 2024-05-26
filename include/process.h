@@ -18,7 +18,6 @@ class Process {
   bool operator>(Process const& a) const;
 
  private:
-  void CalculateCpuUtilization(std::vector<std::string> cpu_utilization_data);
   int pid_;
   std::string user_;
   std::string command_;

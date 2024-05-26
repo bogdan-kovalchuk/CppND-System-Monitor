@@ -57,6 +57,7 @@ std::string ParseMeminfoValue(const std::string& meminfo_content,
                               const std::string& key);
 int ParsePid(const std::string& stat_line);
 std::string ParseRamMb(const std::string& ram_kb);
+float ComputeCpuUtilization(const std::vector<std::string>& cpu_data);
 };  // namespace LinuxParser
 
 #endif

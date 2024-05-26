@@ -16,7 +16,7 @@ Process::Process(int pid) : pid_(pid) {
   ram_ = LinuxParser::ParseRamMb(LinuxParser::Ram(pid));
   user_ = LinuxParser::User(pid);
   up_time_ = LinuxParser::UpTime() - LinuxParser::UpTime(pid) / sysconf(_SC_CLK_TCK);
-  CalculateCpuUtilization(LinuxParser::CpuUtilization(pid));
+  cpu_utilization_ = LinuxParser::ComputeCpuUtilization(LinuxParser::CpuUtilization(pid));
 }
 
 int Process::Pid() { return pid_; }
@@ -35,21 +35,4 @@ bool Process::operator>(Process const& a) const {
   if (cpu_utilization_ != a.cpu_utilization_)
     return cpu_utilization_ > a.cpu_utilization_;
   return pid_ > a.pid_;
-}
-
-void Process::CalculateCpuUtilization(vector<string> cpu_utilization_data) {
-  if (cpu_utilization_data.size() < 6) {
-    cpu_utilization_ = 0.0;
-    return;
-  }
-  int uptime = std::stoi(cpu_utilization_data[0]);
-  int utime = std::stoi(cpu_utilization_data[1]);
-  int stime = std::stoi(cpu_utilization_data[2]);
-  int cutime = std::stoi(cpu_utilization_data[3]);
-  int cstime = std::stoi(cpu_utilization_data[4]);
-  int starttime = std::stoi(cpu_utilization_data[5]);
-
-  int total_time = utime + stime + cutime + cstime;
-  int seconds = uptime - (starttime / sysconf(_SC_CLK_TCK));
-  cpu_utilization_ = (float)(total_time / sysconf(_SC_CLK_TCK)) / seconds;
 }
