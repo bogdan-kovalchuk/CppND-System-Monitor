@@ -285,16 +285,18 @@ string LinuxParser::ParseStatField(const string& stat_line, int field_index) {
 string LinuxParser::ParseStatusValue(const string& status_content,
                                      const string& key) {
   string search_key = key + ":";
-  size_t pos = status_content.find(search_key);
-  if (pos == string::npos) return "";
-  size_t line_end = status_content.find('\n', pos);
-  if (line_end == string::npos) line_end = status_content.size();
-  string line = status_content.substr(pos, line_end - pos);
-  std::istringstream iss(line);
-  string k, val;
-  iss >> k;
-  iss >> val;
-  return val;
+  std::istringstream stream(status_content);
+  string line;
+  while (std::getline(stream, line)) {
+    if (line.find(search_key) == 0) {
+      std::istringstream iss(line);
+      string k, val;
+      iss >> k;
+      iss >> val;
+      return val;
+    }
+  }
+  return "";
 }
 
 long LinuxParser::ParseLong(const string& s, long fallback) {
